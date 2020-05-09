@@ -1,5 +1,12 @@
 package alquileres.modelo;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,6 +25,10 @@ import java.util.TreeSet;
  * colección concreta ArrayList
  */
 public class AgenciaAlquiler {
+	private static final File FICHERO_ENTRADA = new File("flota.csv");
+	private static final File FICHERO_SALIDA = new File("marcasmodelos.txt");
+	
+	
 	private String nombre; // el nombre de la agencia
 	private List<Vehiculo> flota; // la lista de vehículos
 
@@ -61,7 +72,7 @@ public class AgenciaAlquiler {
 	 * Asumimos todos los datos correctos. Puede haber espacios antes y después
 	 * de cada dato
 	 */
-	private Vehiculo obtenerVehiculo(String info) {
+	private Vehiculo obtenerVehiculo(String info) throws NumberFormatException{
 		Vehiculo v = null;
 		String[] informacionVehiculo = info.split(",");
 		for(int i = 0; i < informacionVehiculo.length; i++) {
@@ -85,21 +96,28 @@ public class AgenciaAlquiler {
 	 * La clase Utilidades nos devuelve un array con las líneas de datos
 	 * de la flota de vehículos  
 	 */
-//	public void cargarFlota() {
-//		String[] datos = Utilidades.obtenerLineasDatos();
-//		String error = null;
-//		try {
-//			for (String linea : datos) {
-//				error = linea;
-//				Vehiculo vehiculo = obtenerVehiculo(linea);
-//				this.addVehiculo(vehiculo);
-//			}
-//		}
-//		catch (Exception e) {
-//			System.out.println(error);
-//		}
-//
-//	}
+	public int cargarFlota() {
+		int errores  = 0;
+		BufferedReader entrada = null;
+		try {
+			entrada = new BufferedReader(new FileReader(FICHERO_ENTRADA));
+			String lineaTexto = entrada.readLine();
+			while (lineaTexto != null) {
+				try {
+					this.addVehiculo(this.obtenerVehiculo(lineaTexto));
+				} catch (NumberFormatException ex) {
+					errores += 1;
+				} finally {
+					lineaTexto = entrada.readLine();
+				}
+
+			}
+
+		} catch (IOException excep) {
+			System.out.println("Error al intentar leer el fichero" + FICHERO_ENTRADA.toString());
+		}
+		return errores;
+	}
 
 	/**
 	 * Representación textual de la agencia
@@ -194,6 +212,23 @@ public class AgenciaAlquiler {
 			}
 		}
 		return marcasYmodelos;
+	}
+		
+	public void guardarMarcasModelos() throws IOException, NullPointerException {
+		PrintWriter marcasmodelos = null;
+		try {
+			marcasmodelos = new PrintWriter(new BufferedWriter (new FileWriter(FICHERO_SALIDA)));
+			Set<Map.Entry<String, Set<String>>> conjuntoEntradas = this.marcasConModelos().entrySet();
+			Iterator<Map.Entry<String, Set<String>>> it = conjuntoEntradas.iterator();
+			while (it.hasNext()) {
+				Map.Entry<String, Set<String>> entrada = it.next();
+				marcasmodelos.write(entrada.getKey().toString() + "\n\t" + entrada.getValue().toString() + "\n");
+			}
+		}
+		finally
+		{
+			marcasmodelos.close();
+		}
 	}
 
 }

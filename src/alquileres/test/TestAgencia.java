@@ -1,7 +1,11 @@
 package alquileres.test;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+import alquileres.modelo.AgenciaAlquiler;
+import alquileres.modelo.Coche;
+import alquileres.modelo.Furgoneta;
 
 /**
  *    
@@ -82,9 +86,13 @@ public class TestAgencia {
 
 	/**
 	 * demo guardarMarcasModelos()
+	 * @throws IOException 
+	 * @throws NullPointerException 
 	 */
-	public void testGuardarMarcasModelos() {
-
+	public void testGuardarMarcasModelos() throws NullPointerException, IOException {
+		System.out.println("Guardando en en el fichero marcasmodelos.txt las marcas y los modelos...");
+		agencia.guardarMarcasModelos();
+		System.out.println("Guardado!");
 	}
 
 	/**
@@ -99,8 +107,10 @@ public class TestAgencia {
 
 	/**
 	 * inicio de la aplicación
+	 * @throws IOException 
+	 * @throws NullPointerException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws NullPointerException, IOException {
 		if (args.length != 1) {
 			System.out.println(
 			        "Error en nº argumentos\nSintaxis: java TestAgencia <nombre-agencia>");
@@ -112,9 +122,8 @@ public class TestAgencia {
 			test.testBuscarCoches();
 			test.testCochesOrdenadosMatricula();
 			test.testFurgonetasOrdenadasPorVolumen();
-
 			test.testMarcasConModelos();
-
+			test.testGuardarMarcasModelos();
 		}
 
 	}
